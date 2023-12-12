@@ -1,0 +1,129 @@
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+public class ChangeCalculatorGUI extends JFrame implements ActionListener {
+    private JTextField cartTotalField, customerAmountField;
+    private JButton submitButton, clearButton;
+    private JTextArea changeTable;
+
+    private final double[] DENOMINATIONS = {100, 50, 20, 10, 5, 2, 1, .5, .2, .1, .05, .02, .01};
+
+    public ChangeCalculatorGUI() {
+        setTitle("Change Calculator");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(500, 400);
+        setLocationRelativeTo(null);
+        setLayout(null);
+
+        JLabel cartTotalLabel = new JLabel("Cart Total:");
+        cartTotalLabel.setBounds(50, 50, 80, 25);
+        add(cartTotalLabel);
+
+        cartTotalField = new JTextField();
+        cartTotalField.setBounds(150, 50, 150, 25);
+        add(cartTotalField);
+
+        JLabel customerAmountLabel = new JLabel("Customer Amount:");
+        customerAmountLabel.setBounds(50, 100, 120, 25);
+        add(customerAmountLabel);
+
+        customerAmountField = new JTextField();
+        customerAmountField.setBounds(180, 100, 150, 25);
+        add(customerAmountField);
+
+        submitButton = new JButton("Submit");
+        submitButton.setBounds(120, 150, 100, 30);
+        add(submitButton);
+        submitButton.addActionListener(this);
+
+        clearButton = new JButton("Clear Input");
+        clearButton.setBounds(250, 150, 120, 30);
+        add(clearButton);
+        clearButton.addActionListener(this);
+
+        changeTable = new JTextArea();
+        JScrollPane scrollPane = new JScrollPane(changeTable);
+        scrollPane.setBounds(50, 200, 400, 150);
+        add(scrollPane);
+
+        setVisible(true);
+    }
+
+    public static void main(String[] args) {
+        new ChangeCalculatorGUI();
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource() == submitButton) {
+            calculateChange();
+        } else if (e.getSource() == clearButton) {
+            clearInput();
+        }
+    }
+
+    private void calculateChange() {
+        try {
+            double cartTotal = Double.parseDouble(cartTotalField.getText());
+            double customerAmount = Double.parseDouble(customerAmountField.getText());
+
+            if (cartTotal > customerAmount) {
+                changeTable.setText("Customer does not have enough for this transaction");
+            } else {
+                double changeDue = customerAmount - cartTotal;
+                int[] change = new int[DENOMINATIONS.length];
+
+                for (int i = 0; i < DENOMINATIONS.length; i++) {
+                    change[i] = getQty(changeDue, DENOMINATIONS[i]);
+                    changeDue -= DENOMINATIONS[i] * change[i];
+                }
+                render(change);
+            }
+        } catch (NumberFormatException ex) {
+            changeTable.setText("Invalid input. Please enter valid numbers.");
+        }
+    }
+
+    private void render(int[] change) {
+        StringBuilder tableStr = new StringBuilder(buildHeader("Quantity", "Denominations"));
+        tableStr.append(populateTable(change));
+        tableStr.append(buildFooter());
+        changeTable.setText(tableStr.toString());
+    }
+
+    private String buildHeader(String head1, String head2) {
+        return String.format("%-10s %-15s%n", head1, head2);
+    }
+
+    private String populateTable(int[] change) {
+        StringBuilder changeStr = new StringBuilder();
+        for (int i = 0; i < change.length; i++) {
+            double denominationValue = DENOMINATIONS[i];
+            String prettyStr = (denominationValue < 1) ? denominationValue * 100 + "c" : "€" + denominationValue;
+            if (change[i] > 0) {
+                changeStr.append(String.format("%-10d %-15s%n", change[i], prettyStr));
+            }
+        }
+        return changeStr.toString();
+    }
+
+    private int getQty(double changeDue, double denomination) {
+        changeDue = Math.round(changeDue * 100) / 100.0;
+        int divisions = 0;
+        if (changeDue >= denomination) {
+            divisions = (int) (changeDue / denomination);
+        }
+        return divisions;
+    }
+
+    private void clearInput() {
+        cartTotalField.setText("");
+        customerAmountField.setText("");
+        changeTable.setText("");
+    }
+
+    private String buildFooter() {
+        return "";
+    }
+}
