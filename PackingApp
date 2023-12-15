@@ -1,0 +1,76 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+
+public class PackingApp extends JFrame {
+    private JTextField lengthField, widthField, heightField, weightField;
+    private JButton calculateButton;
+    private JTextArea resultArea;
+
+    public PackingApp() {
+        setTitle("Packing Optimizer");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLayout(new BorderLayout());
+
+        JPanel inputPanel = new JPanel(new GridLayout(5, 2));
+        inputPanel.add(new JLabel("Item Length: "));
+        lengthField = new JTextField();
+        inputPanel.add(lengthField);
+
+        inputPanel.add(new JLabel("Item Width: "));
+        widthField = new JTextField();
+        inputPanel.add(widthField);
+
+        inputPanel.add(new JLabel("Item Height: "));
+        heightField = new JTextField();
+        inputPanel.add(heightField);
+
+        inputPanel.add(new JLabel("Item Weight: "));
+        weightField = new JTextField();
+        inputPanel.add(weightField);
+
+        calculateButton = new JButton("Calculate");
+        calculateButton.addActionListener(new CalculateButtonListener());
+
+        inputPanel.add(new JLabel());
+        inputPanel.add(calculateButton);
+
+        add(inputPanel, BorderLayout.NORTH);
+
+        resultArea = new JTextArea(10, 30);
+        resultArea.setEditable(false);
+        JScrollPane scrollPane = new JScrollPane(resultArea);
+        add(scrollPane, BorderLayout.CENTER);
+
+        pack();
+        setLocationRelativeTo(null);
+        setVisible(true);
+    }
+
+    private class CalculateButtonListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            try {
+                double length = Double.parseDouble(lengthField.getText());
+                double width = Double.parseDouble(widthField.getText());
+                double height = Double.parseDouble(heightField.getText());
+                double weight = Double.parseDouble(weightField.getText());
+
+                // Perform packing calculation here using the dimensions and weight
+               
+                // For demo purposes, displaying the input data
+                String result = "Item Dimensions: " + length + "x" + width + "x" + height
+                        + "\nItem Weight: " + weight + " units\n";
+                resultArea.setText(result);
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(PackingApp.this, "Please enter valid numbers for dimensions and weight.", "Invalid Input", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            new PackingApp();
+        });
+    }
+}
