@@ -1,0 +1,77 @@
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+
+public class WarehouseManagerApp extends JFrame {
+    private JTextField boxLengthField, boxWidthField, boxHeightField, boxWeightField;
+    private JButton calculateButton;
+    private JTextArea resultArea;
+
+    public WarehouseManagerApp() {
+        setTitle("Box Preparation");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLayout(new BorderLayout());
+
+        JPanel inputPanel = new JPanel(new GridLayout(5, 2));
+        inputPanel.add(new JLabel("Box Length: "));
+        boxLengthField = new JTextField();
+        inputPanel.add(boxLengthField);
+
+        inputPanel.add(new JLabel("Box Width: "));
+        boxWidthField = new JTextField();
+        inputPanel.add(boxWidthField);
+
+        inputPanel.add(new JLabel("Box Height: "));
+        boxHeightField = new JTextField();
+        inputPanel.add(boxHeightField);
+
+        inputPanel.add(new JLabel("Box Weight: "));
+        boxWeightField = new JTextField();
+        inputPanel.add(boxWeightField);
+
+        calculateButton = new JButton("Prepare");
+        calculateButton.addActionListener(new CalculateButtonListener());
+
+        inputPanel.add(new JLabel());
+        inputPanel.add(calculateButton);
+
+        add(inputPanel, BorderLayout.NORTH);
+
+        resultArea = new JTextArea(10, 30);
+        resultArea.setEditable(false);
+        JScrollPane scrollPane = new JScrollPane(resultArea);
+        add(scrollPane, BorderLayout.CENTER);
+
+        pack();
+        setLocationRelativeTo(null);
+        setVisible(true);
+    }
+
+    private class CalculateButtonListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            try {
+                double boxLength = Double.parseDouble(boxLengthField.getText());
+                double boxWidth = Double.parseDouble(boxWidthField.getText());
+                double boxHeight = Double.parseDouble(boxHeightField.getText());
+                double boxWeight = Double.parseDouble(boxWeightField.getText());
+
+                // Process box information here
+               
+                // For demonstration purposes, displaying the input data
+                String result = "Box Dimensions: " + boxLength + "x" + boxWidth + "x" + boxHeight
+                        + "\nBox Weight: " + boxWeight + " units\n";
+                resultArea.setText(result);
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(WarehouseManagerApp.this, "Please enter valid numbers for box dimensions and weight.", "Invalid Input", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            new WarehouseManagerApp();
+        });
+    }
+}
